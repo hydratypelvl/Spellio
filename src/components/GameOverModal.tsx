@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Stats {
   totalGames: number;
@@ -84,7 +85,7 @@ export default function GameOverModal({
           )}
         </div>
 
-        {session?.user && (
+        {session?.user ? (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">Your Stats</h3>
             <div className="grid grid-cols-4 gap-3 text-center">
@@ -107,6 +108,15 @@ export default function GameOverModal({
                 <div className="text-xs text-zinc-500 dark:text-zinc-400">Max Streak</div>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="mb-6 text-center">
+            <Link
+              href="/signin"
+              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+            >
+              Sign in to track stats
+            </Link>
           </div>
         )}
 

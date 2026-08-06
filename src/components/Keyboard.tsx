@@ -44,7 +44,7 @@ export default function Keyboard({
   };
 
   return (
-    <div className="flex flex-col gap-[3px] sm:gap-1" role="group" aria-label="Keyboard">
+    <div className="flex flex-col gap-[3px] sm:gap-1 w-full" role="group" aria-label="Keyboard">
       {ROWS.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center gap-[3px] sm:gap-1">
           {row.map((key) => {
@@ -56,7 +56,7 @@ export default function Keyboard({
                 onMouseDown={(e) => e.preventDefault()}
                 disabled={disabled}
                 className={`h-[46px] sm:h-14 rounded-[4px] flex items-center justify-center border transition-colors duration-200 text-[13px] sm:text-base font-semibold select-none ${
-                  isSpecial ? "px-1.5 sm:px-2 min-w-[46px] sm:min-w-[65px]" : "w-[38px] sm:w-[42px]"
+                  isSpecial ? "flex-[1.3] min-w-0" : "flex-1 min-w-0"
                 } ${stateStyles[keyStates[key] || "empty"]}`}
                 aria-label={key === "BACKSPACE" ? "Backspace" : key === "ENTER" ? "Enter" : key}
               >
