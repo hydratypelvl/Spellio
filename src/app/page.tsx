@@ -205,6 +205,15 @@ export default function Home() {
   }, [gameState.gameOver]);
 
   useEffect(() => {
+    if (gameState.message) {
+      const timer = setTimeout(() => {
+        setGameState((prev) => ({ ...prev, message: "" }));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.message]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameOverRef.current || showTutorialRef.current || showManualTutorialRef.current || showGameOverRef.current) return;
 
@@ -314,7 +323,7 @@ export default function Home() {
         <div className="relative">
           {gameState.message && (
             <div
-              className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+              className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
               role="alert"
             >
               <span className="px-5 py-2.5 text-base sm:text-lg font-bold text-center bg-zinc-800 text-white rounded-md shadow-lg">
