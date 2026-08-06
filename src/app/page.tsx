@@ -9,6 +9,7 @@ import Confetti from "@/components/Confetti";
 import TutorialModal, { useTutorial } from "@/components/TutorialModal";
 import GameOverModal from "@/components/GameOverModal";
 import StatsModal from "@/components/StatsModal";
+import UsernameModal from "@/components/UsernameModal";
 import {
   createGameState,
   addLetter,
@@ -125,7 +126,10 @@ export default function Home() {
   const [revealedRows, setRevealedRows] = useState<Set<number>>(new Set());
   const [showGameOver, setShowGameOver] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [usernameDismissed, setUsernameDismissed] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number>(() => Date.now());
+
+  const needsUsername = status === "authenticated" && session?.user && !(session.user as { username?: string }).username && !usernameDismissed;
 
   const handleKeyPress = useCallback(
     (key: string) => {
@@ -222,6 +226,13 @@ export default function Home() {
       )}
 
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+
+      {needsUsername && (
+        <UsernameModal onComplete={() => {
+          setUsernameDismissed(true);
+          window.location.reload();
+        }} />
+      )}
 
       <Confetti active={gameState.won} />
 
