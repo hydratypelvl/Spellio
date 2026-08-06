@@ -273,7 +273,7 @@ export default function Home() {
               </div>
             ) : (
               <Link
-                href="/api/auth/signin"
+                href="/signin"
                 className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
               >
                 Sign In
