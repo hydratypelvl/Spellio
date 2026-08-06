@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Spellio",
     images: [
       {
-        url: "https://spellio-omega.vercel.app/og-image.svg",
+        url: "https://spellio-omega.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "Spellio - Word Guessing Game",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Spellio",
     description: "Guess the word in 6 tries",
-    images: ["https://spellio-omega.vercel.app/og-image.svg"],
+    images: ["https://spellio-omega.vercel.app/og-image.png"],
   },
 };
 
