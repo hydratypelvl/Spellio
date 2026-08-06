@@ -31,17 +31,14 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.username = (user as { username?: string }).username ?? null;
       }
 
-      if (!token.username && token.id) {
+      if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
           select: { username: true },
         });
-        if (dbUser?.username) {
-          token.username = dbUser.username;
-        }
+        token.username = dbUser?.username ?? null;
       }
 
       return token;

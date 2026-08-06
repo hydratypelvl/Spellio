@@ -124,7 +124,7 @@ export default function ProfileDropdown({ username, image, name }: ProfileDropdo
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 focus:outline-none"
+        className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none"
         aria-label="Profile menu"
       >
         <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 hidden sm:inline">
