@@ -289,7 +289,7 @@ export default function Home() {
                   />
                 )}
                 <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 hidden sm:inline">
-                  {session.user.name || session.user.email}
+                  {(session.user as { username?: string }).username || session.user.name || session.user.email}
                 </span>
                 <button
                   onClick={() => signOut()}
