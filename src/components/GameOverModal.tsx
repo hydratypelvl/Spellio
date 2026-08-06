@@ -54,7 +54,8 @@ export default function GameOverModal({
   const [stats] = useState<Stats>(() => loadStats(won, attempts));
 
   const distribution = stats.distribution;
-  const maxCount = Math.max(...distribution);
+  const maxCount = Math.max(...distribution, stats.totalGames - stats.totalWins);
+  const losses = stats.totalGames - stats.totalWins;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
@@ -131,6 +132,21 @@ export default function GameOverModal({
                 </div>
               </div>
             ))}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-black dark:text-white w-3">X</span>
+              <div className="flex-1">
+                <div
+                  className="h-6 rounded flex items-center justify-end px-2 text-xs font-bold text-white"
+                  style={{
+                    width: `${maxCount > 0 ? (losses / maxCount) * 100 : 0}%`,
+                    minWidth: losses > 0 ? "24px" : "0px",
+                    backgroundColor: "#e53e3e",
+                  }}
+                >
+                  {losses}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

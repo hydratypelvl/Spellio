@@ -63,8 +63,9 @@ export default function StatsModal({ onClose }: StatsModalProps) {
   };
 
   const maxDistribution = stats
-    ? Math.max(...Object.values(stats.guessDistribution as Record<string, number>), 1)
+    ? Math.max(...Object.values(stats.guessDistribution as Record<string, number>), stats.totalGames - stats.wins, 1)
     : 1;
+  const losses = stats ? stats.totalGames - stats.wins : 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -123,6 +124,20 @@ export default function StatsModal({ onClose }: StatsModalProps) {
                     </div>
                   </div>
                 ))}
+                <div className="flex items-center gap-2">
+                  <span className="w-4 text-sm text-zinc-600 dark:text-zinc-400">X</span>
+                  <div className="flex-1 h-6 bg-zinc-100 dark:bg-zinc-700 rounded">
+                    <div
+                      className="h-full flex items-center justify-end px-2 bg-red-500 rounded text-xs font-bold text-white"
+                      style={{
+                        width: `${(losses / maxDistribution) * 100}%`,
+                        minWidth: losses > 0 ? "24px" : "0",
+                      }}
+                    >
+                      {losses || ""}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

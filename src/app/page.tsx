@@ -311,16 +311,20 @@ export default function Home() {
       </header>
 
       <main className="flex flex-col items-center gap-8 flex-1">
-        {gameState.message && (
-          <div
-            className="px-4 py-2 text-sm font-medium text-center bg-zinc-800 text-white rounded"
-            role="alert"
-          >
-            {gameState.message}
-          </div>
-        )}
+        <div className="relative">
+          {gameState.message && (
+            <div
+              className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+              role="alert"
+            >
+              <span className="px-5 py-2.5 text-base sm:text-lg font-bold text-center bg-zinc-800 text-white rounded-md shadow-lg">
+                {gameState.message}
+              </span>
+            </div>
+          )}
 
-        <Board board={gameState.board} revealedRows={revealedRows} />
+          <Board board={gameState.board} revealedRows={revealedRows} />
+        </div>
 
         <Keyboard
           onKeyPress={handleKeyPress}
