@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 import Board from "@/components/Board";
 import Keyboard from "@/components/Keyboard";
 import Confetti from "@/components/Confetti";
@@ -112,38 +113,37 @@ function getRandomWord(): string {
   return WORDS[Math.floor(Math.random() * WORDS.length)];
 }
 
+function initGameState() {
+  return createGameState(getRandomWord());
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
   const { showTutorial, closeTutorial } = useTutorial();
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<GameState>(initGameState);
   const [showManualTutorial, setShowManualTutorial] = useState(false);
   const [revealedRows, setRevealedRows] = useState<Set<number>>(new Set());
   const [showGameOver, setShowGameOver] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [gameStartTime, setGameStartTime] = useState<number>(0);
-
-  useEffect(() => {
-    setGameState(createGameState(getRandomWord()));
-    setGameStartTime(Date.now());
-  }, []);
+  const [gameStartTime, setGameStartTime] = useState<number>(() => Date.now());
 
   const handleKeyPress = useCallback(
     (key: string) => {
-      if (!gameState || gameState.gameOver) return;
+      if (gameState.gameOver) return;
       setGameState(addLetter(gameState, key));
     },
     [gameState]
   );
 
   const handleEnter = useCallback(() => {
-    if (!gameState || gameState.gameOver) return;
+    if (gameState.gameOver) return;
     const rowToReveal = gameState.currentRow;
     setRevealedRows(new Set([...revealedRows, rowToReveal]));
     setGameState(submitGuess(gameState));
   }, [gameState, revealedRows]);
 
   const handleBackspace = useCallback(() => {
-    if (!gameState || gameState.gameOver) return;
+    if (gameState.gameOver) return;
     setGameState(removeLetter(gameState));
   }, [gameState]);
 
@@ -155,7 +155,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (gameState?.gameOver && session?.user) {
+    if (gameState.gameOver && session?.user) {
       const time = Math.floor((Date.now() - gameStartTime) / 1000);
       const lastRow = gameState.currentRow > 0 ? gameState.currentRow - 1 : 0;
       const word = gameState.board[lastRow]
@@ -173,20 +173,20 @@ export default function Home() {
         }),
       });
     }
-  }, [gameState?.gameOver, session?.user, gameStartTime, gameState]);
+  }, [gameState.gameOver, session?.user, gameStartTime, gameState]);
 
   useEffect(() => {
-    if (gameState?.gameOver) {
+    if (gameState.gameOver) {
       const timer = setTimeout(() => {
         setShowGameOver(true);
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [gameState?.gameOver]);
+  }, [gameState.gameOver]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState?.gameOver || showTutorial || showManualTutorial || showGameOver) return;
+      if (gameState.gameOver || showTutorial || showManualTutorial || showGameOver) return;
 
       if (e.key === "Enter") {
         handleEnter();
@@ -201,7 +201,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState, handleEnter, handleBackspace, handleKeyPress, showTutorial, showManualTutorial, showGameOver]);
 
-  if (status === "loading" || !gameState) return null;
+  if (status === "loading") return null;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white dark:bg-zinc-900 p-4">
@@ -254,6 +254,7 @@ export default function Home() {
             {session?.user ? (
               <div className="flex items-center gap-3">
                 {session.user.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={session.user.image}
                     alt={session.user.name || "User"}
@@ -271,12 +272,12 @@ export default function Home() {
                 </button>
               </div>
             ) : (
-              <a
+              <Link
                 href="/api/auth/signin"
                 className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
               >
                 Sign In
-              </a>
+              </Link>
             )}
           </div>
         </div>
@@ -292,7 +293,7 @@ export default function Home() {
           </div>
         )}
 
-        <Board board={gameState.board} currentRow={gameState.currentRow} revealedRows={revealedRows} />
+        <Board board={gameState.board} revealedRows={revealedRows} />
 
         <Keyboard
           onKeyPress={handleKeyPress}

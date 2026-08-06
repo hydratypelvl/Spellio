@@ -1,90 +1,79 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Tile from "./Tile";
 
-interface TutorialModalProps {
-  onClose: () => void;
+export function useTutorial() {
+  const [showTutorial, setShowTutorial] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !localStorage.getItem("wordle-tutorial-seen");
+  });
+
+  const closeTutorial = () => {
+    localStorage.setItem("wordle-tutorial-seen", "true");
+    setShowTutorial(false);
+  };
+
+  return { showTutorial, closeTutorial };
 }
 
-export default function TutorialModal({ onClose }: TutorialModalProps) {
+export default function TutorialModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black dark:text-white">
-          How to Play
-        </h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
+      <div className="bg-white dark:bg-zinc-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+          aria-label="Close"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        <div className="space-y-4 text-sm text-zinc-700 dark:text-zinc-300">
-          <p>
-            Guess the word in 6 tries. Each guess must be a valid 5-letter word.
+        <h2 className="text-3xl font-bold text-center text-black dark:text-white mb-6">How To Play</h2>
+
+        <div className="space-y-6">
+          <p className="text-zinc-600 dark:text-zinc-400 text-center">
+            Guess the Wordle in 6 tries. Each guess must be a valid 5-letter word.
           </p>
 
-          <div className="flex gap-2 my-4">
-            <div className="w-12 h-12 flex items-center justify-center bg-green-500 text-white font-bold text-lg rounded">
-              W
-            </div>
-            <div className="flex items-center">
-              <span>
-                <strong>Green</strong> — letter is in the correct position
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2 my-4">
-            <div className="w-12 h-12 flex items-center justify-center bg-yellow-500 text-white font-bold text-lg rounded">
-              E
-            </div>
-            <div className="flex items-center">
-              <span>
-                <strong>Yellow</strong> — letter is in the word but wrong position
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2 my-4">
-            <div className="w-12 h-12 flex items-center justify-center bg-zinc-500 text-white font-bold text-lg rounded">
-              X
-            </div>
-            <div className="flex items-center">
-              <span>
-                <strong>Gray</strong> — letter is not in the word
-              </span>
+          <div>
+            <p className="text-zinc-600 dark:text-zinc-400 mb-2">After each guess, the tiles will change color:</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <Tile letter="W" state="correct" />
+                <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="font-bold">Green</span> is in the word and in the correct spot.
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Tile letter="E" state="present" />
+                <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="font-bold">Yellow</span> is in the word but in the wrong spot.
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Tile letter="A" state="absent" />
+                <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="font-bold">Gray</span> is not in the word at all.
+                </span>
+              </div>
             </div>
           </div>
 
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Use your keyboard or tap the on-screen keys to type. Press Enter to
-            submit a guess.
+          <p className="text-zinc-600 dark:text-zinc-400 text-center">
+            Use your keyboard or tap the keys below to type.
           </p>
         </div>
 
         <button
           onClick={onClose}
-          className="mt-6 w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+          className="w-full mt-8 py-3 px-6 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
         >
-          Got it!
+          Got It!
         </button>
       </div>
     </div>
   );
-}
-
-export function useTutorial() {
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const hasSeenTutorial = localStorage.getItem("wordle-tutorial-seen");
-    if (!hasSeenTutorial) {
-      setShowTutorial(true);
-    }
-  }, []);
-
-  const closeTutorial = () => {
-    setShowTutorial(false);
-    localStorage.setItem("wordle-tutorial-seen", "true");
-  };
-
-  return { showTutorial: mounted && showTutorial, closeTutorial };
 }

@@ -1,60 +1,85 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { type TileState } from "@/lib/wordle";
+import { useState, useEffect, useRef } from "react";
 
 interface TileProps {
   letter: string;
-  state: TileState;
-  delay?: number;
+  state?: "empty" | "correct" | "present" | "absent";
   animate?: boolean;
+  delay?: number;
 }
 
-const stateStyles: Record<TileState, string> = {
-  correct: "bg-green-500 border-green-500 text-white",
-  present: "bg-yellow-500 border-yellow-500 text-white",
-  absent: "bg-zinc-500 border-zinc-500 text-white",
-  empty: "bg-white border-zinc-300 text-black dark:bg-zinc-800 dark:border-zinc-600 dark:text-white",
-};
-
-export default function Tile({ letter, state, delay = 0, animate = false }: TileProps) {
+export default function Tile({ letter, state = "empty", animate = false, delay = 0 }: TileProps) {
   const [isRevealing, setIsRevealing] = useState(false);
-  const [currentState, setCurrentState] = useState<TileState>(state);
+  const [currentState, setCurrentState] = useState(state);
+  const [flipComplete, setFlipComplete] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevAnimate = useRef(false);
+  const prevState = useRef(state);
 
   useEffect(() => {
-    if (animate && state !== "empty" && letter) {
+    const shouldAnimate = animate && state !== "empty" && letter && !prevAnimate.current;
+    prevAnimate.current = animate;
+
+    if (!shouldAnimate) {
+      setCurrentState(state);
+      prevState.current = state;
+      return;
+    }
+
+    const revealDelay = setTimeout(() => {
       setIsRevealing(true);
       setCurrentState("empty");
 
-      const revealTimeout = setTimeout(() => {
+      const flipTimeout = setTimeout(() => {
         setCurrentState(state);
-        setIsRevealing(false);
-      }, delay + 300);
+        setFlipComplete(true);
 
-      return () => clearTimeout(revealTimeout);
-    } else {
-      setCurrentState(state);
-    }
+        const resetTimeout = setTimeout(() => {
+          setIsRevealing(false);
+        }, 600);
+
+        timeoutRef.current = resetTimeout;
+      }, 300);
+
+      timeoutRef.current = flipTimeout;
+    }, delay);
+
+    timeoutRef.current = revealDelay;
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [animate, state, letter, delay]);
+
+  const getBackgroundColor = () => {
+    if (!letter && !isRevealing) return "bg-zinc-200 dark:bg-zinc-700 border-zinc-400 dark:border-zinc-600";
+
+    if (isRevealing && !flipComplete) return "bg-zinc-200 dark:bg-zinc-700 border-zinc-400 dark:border-zinc-600";
+
+    switch (currentState) {
+      case "correct":
+        return "bg-green-500 border-green-500 text-white";
+      case "present":
+        return "bg-yellow-500 border-yellow-500 text-white";
+      case "absent":
+        return "bg-zinc-500 border-zinc-500 text-white";
+      default:
+        return "bg-zinc-200 dark:bg-zinc-700 border-zinc-400 dark:border-zinc-600";
+    }
+  };
+
+  const shouldFlip = animate && letter && (state !== "empty");
+  const flipClass = shouldFlip ? (flipComplete ? "flip-complete" : "flip-half") : "";
 
   return (
     <div
-      className={`
-        flex items-center justify-center w-14 h-14 border-2 text-2xl font-bold uppercase select-none
-        transition-all duration-300
-        ${stateStyles[currentState]}
-        ${isRevealing ? "animate-flip" : ""}
-      `}
-      style={{
-        animationDelay: state !== "empty" ? `${delay}ms` : undefined,
-      }}
-      aria-label={letter ? `${letter}, ${state}` : "empty"}
+      className={`relative w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center border-2 text-2xl sm:text-3xl font-bold uppercase ${getBackgroundColor()} ${flipClass} tile-flip`}
+      data-letter={letter}
+      data-state={state}
+      aria-label={letter ? `Letter ${letter}, ${state}` : "Empty tile"}
     >
-      <div className={`${isRevealing ? "animate-spin-in" : ""}`}
-        style={{ animationDelay: `${delay}ms` }}
-      >
-        {letter}
-      </div>
+      <span className="relative z-10">{letter}</span>
     </div>
   );
 }
