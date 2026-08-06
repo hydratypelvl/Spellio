@@ -51,7 +51,7 @@ export default function Confetti({ active }: { active: boolean }) {
   if (!active || pieces.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 9999 }}>
       {pieces.map((piece) => (
         <div
           key={piece.id}

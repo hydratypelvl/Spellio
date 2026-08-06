@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Board from "@/components/Board";
@@ -158,6 +158,22 @@ export default function Home() {
     setGameStartTime(Date.now());
   }, []);
 
+  const gameOverRef = useRef(gameState.gameOver);
+  const showTutorialRef = useRef(showTutorial);
+  const showManualTutorialRef = useRef(showManualTutorial);
+  const showGameOverRef = useRef(showGameOver);
+  const handleEnterRef = useRef(handleEnter);
+  const handleBackspaceRef = useRef(handleBackspace);
+  const handleKeyPressRef = useRef(handleKeyPress);
+
+  useEffect(() => { gameOverRef.current = gameState.gameOver; }, [gameState.gameOver]);
+  useEffect(() => { showTutorialRef.current = showTutorial; }, [showTutorial]);
+  useEffect(() => { showManualTutorialRef.current = showManualTutorial; }, [showManualTutorial]);
+  useEffect(() => { showGameOverRef.current = showGameOver; }, [showGameOver]);
+  useEffect(() => { handleEnterRef.current = handleEnter; }, [handleEnter]);
+  useEffect(() => { handleBackspaceRef.current = handleBackspace; }, [handleBackspace]);
+  useEffect(() => { handleKeyPressRef.current = handleKeyPress; }, [handleKeyPress]);
+
   useEffect(() => {
     if (gameState.gameOver && session?.user) {
       const time = Math.floor((Date.now() - gameStartTime) / 1000);
@@ -177,7 +193,7 @@ export default function Home() {
         }),
       });
     }
-  }, [gameState.gameOver, session?.user, gameStartTime, gameState]);
+  }, [gameState.gameOver, gameState.currentRow, gameState.won, gameState.board, session?.user, gameStartTime]);
 
   useEffect(() => {
     if (gameState.gameOver) {
@@ -190,20 +206,20 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState.gameOver || showTutorial || showManualTutorial || showGameOver) return;
+      if (gameOverRef.current || showTutorialRef.current || showManualTutorialRef.current || showGameOverRef.current) return;
 
       if (e.key === "Enter") {
-        handleEnter();
+        handleEnterRef.current();
       } else if (e.key === "Backspace") {
-        handleBackspace();
+        handleBackspaceRef.current();
       } else if (/^[a-zA-Z]$/.test(e.key)) {
-        handleKeyPress(e.key.toUpperCase());
+        handleKeyPressRef.current(e.key.toUpperCase());
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [gameState, handleEnter, handleBackspace, handleKeyPress, showTutorial, showManualTutorial, showGameOver]);
+  }, []);
 
   if (status === "loading") return null;
 

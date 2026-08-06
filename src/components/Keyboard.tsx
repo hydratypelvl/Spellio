@@ -43,28 +43,26 @@ export default function Keyboard({
     }
   };
 
-  const getKeyStyle = (key: string) => {
-    if (key === "ENTER" || key === "BACKSPACE") {
-      return "px-2 text-xs font-semibold min-w-[65px]";
-    }
-    return "w-10 text-base font-semibold";
-  };
-
   return (
-    <div className="flex flex-col gap-1.5 w-full max-w-[500px]" role="group" aria-label="Keyboard">
+    <div className="flex flex-col gap-1 sm:gap-1.5 w-full max-w-[500px]" role="group" aria-label="Keyboard">
       {ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center gap-1.5">
-          {row.map((key) => (
-            <button
-              key={key}
-              onClick={() => handleClick(key)}
-              disabled={disabled}
-              className={`h-14 rounded flex items-center justify-center border transition-colors duration-200 ${getKeyStyle(key)} ${stateStyles[keyStates[key] || "empty"]}`}
-              aria-label={key === "BACKSPACE" ? "Backspace" : key === "ENTER" ? "Enter" : key}
-            >
-              {key === "BACKSPACE" ? "←" : key}
-            </button>
-          ))}
+        <div key={rowIndex} className="flex justify-center gap-1 sm:gap-1.5">
+          {row.map((key) => {
+            const isSpecial = key === "ENTER" || key === "BACKSPACE";
+            return (
+              <button
+                key={key}
+                onClick={() => handleClick(key)}
+                disabled={disabled}
+                className={`h-12 sm:h-14 rounded flex items-center justify-center border transition-colors duration-200 text-xs sm:text-base font-semibold ${
+                  isSpecial ? "px-1.5 sm:px-2 min-w-[50px] sm:min-w-[65px]" : "flex-1 min-w-0"
+                } ${stateStyles[keyStates[key] || "empty"]}`}
+                aria-label={key === "BACKSPACE" ? "Backspace" : key === "ENTER" ? "Enter" : key}
+              >
+                {key === "BACKSPACE" ? "←" : key}
+              </button>
+            );
+          })}
         </div>
       ))}
     </div>
