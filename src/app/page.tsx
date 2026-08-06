@@ -228,7 +228,7 @@ export default function Home() {
       <header className="w-full max-w-[500px] border-b border-zinc-300 dark:border-zinc-700 pb-4 mb-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-widest uppercase text-black dark:text-white">
-            Wordle
+            Spellio
           </h1>
           <div className="flex items-center gap-2">
             <button
