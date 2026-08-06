@@ -54,76 +54,76 @@ export default function GameOverModal({
   const [stats] = useState<Stats>(() => loadStats(won, attempts));
 
   const distribution = stats.distribution;
-  const maxCount = Math.max(...distribution, stats.totalGames - stats.totalWins);
   const losses = stats.totalGames - stats.totalWins;
+  const maxCount = Math.max(...distribution, losses, 1);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4">
-      <div className="bg-white dark:bg-zinc-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div className="text-center mb-6">
-          {won ? (
-            <>
-              <h2 className="text-3xl font-bold text-black dark:text-white mb-2">You Won!</h2>
-              <p className="text-zinc-600 dark:text-zinc-400">Great job solving it in {attempts} {attempts === 1 ? "try" : "tries"}!</p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-3xl font-bold text-black dark:text-white mb-2">Game Over</h2>
-              <p className="text-zinc-600 dark:text-zinc-400">
-                The word was <span className="font-bold text-green-600 dark:text-green-400">{targetWord}</span>
-              </p>
-            </>
-          )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-black dark:text-white">
+            {won ? "You Won!" : "Game Over"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+            aria-label="Close"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+
+        {!won && (
+          <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+            The word was <span className="font-bold text-green-600 dark:text-green-400">{targetWord}</span>
+          </p>
+        )}
+
+        {won && (
+          <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+            Great job solving it in {attempts} {attempts === 1 ? "try" : "tries"}!
+          </p>
+        )}
 
         {session?.user && (
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">Your Stats</h3>
-            <div className="grid grid-cols-4 gap-3 text-center">
+            <div className="grid grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-black dark:text-white">{stats.totalGames}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">Played</div>
+                <div className="text-3xl font-bold text-black dark:text-white">{stats.totalGames}</div>
+                <div className="text-xs text-zinc-500">Played</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-black dark:text-white">
+                <div className="text-3xl font-bold text-black dark:text-white">
                   {stats.totalGames > 0 ? Math.round((stats.totalWins / stats.totalGames) * 100) : 0}%
                 </div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">Win %</div>
+                <div className="text-xs text-zinc-500">Win %</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-black dark:text-white">{stats.currentStreak}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">Streak</div>
+                <div className="text-3xl font-bold text-black dark:text-white">{stats.currentStreak}</div>
+                <div className="text-xs text-zinc-500">Streak</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-black dark:text-white">{stats.maxStreak}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">Max Streak</div>
+                <div className="text-3xl font-bold text-black dark:text-white">{stats.maxStreak}</div>
+                <div className="text-xs text-zinc-500">Max Streak</div>
               </div>
             </div>
           </div>
         )}
 
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">Guess Distribution</h3>
-          <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold mb-2 text-zinc-700 dark:text-zinc-300">Guess Distribution</h3>
+          <div className="space-y-1">
             {distribution.map((count, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-sm font-medium text-black dark:text-white w-3">{i + 1}</span>
-                <div className="flex-1">
+                <span className="w-4 text-sm text-zinc-600 dark:text-zinc-400">{i + 1}</span>
+                <div className="flex-1 h-6 bg-zinc-100 dark:bg-zinc-700 rounded">
                   <div
-                    className="h-6 rounded flex items-center justify-end px-2 text-xs font-bold text-white"
+                    className="h-full flex items-center justify-end px-2 rounded text-xs font-bold text-white"
                     style={{
                       width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`,
-                      minWidth: count > 0 ? "24px" : "0px",
+                      minWidth: count > 0 ? "24px" : "0",
                       backgroundColor: won && attempts - 1 === i ? "#6aaa64" : "#787c7e",
                     }}
                   >
@@ -133,14 +133,13 @@ export default function GameOverModal({
               </div>
             ))}
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-black dark:text-white w-3">X</span>
-              <div className="flex-1">
+              <span className="w-4 text-sm text-zinc-600 dark:text-zinc-400">X</span>
+              <div className="flex-1 h-6 bg-zinc-100 dark:bg-zinc-700 rounded">
                 <div
-                  className="h-6 rounded flex items-center justify-end px-2 text-xs font-bold text-white"
+                  className="h-full flex items-center justify-end px-2 bg-red-500 rounded text-xs font-bold text-white"
                   style={{
                     width: `${maxCount > 0 ? (losses / maxCount) * 100 : 0}%`,
-                    minWidth: losses > 0 ? "24px" : "0px",
-                    backgroundColor: "#e53e3e",
+                    minWidth: losses > 0 ? "24px" : "0",
                   }}
                 >
                   {losses}
