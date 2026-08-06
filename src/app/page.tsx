@@ -319,7 +319,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex flex-col items-center gap-8 flex-1">
+      <main className="flex flex-col items-center gap-8">
         <div className="relative">
           {gameState.message && (
             <div
@@ -334,15 +334,14 @@ export default function Home() {
 
           <Board board={gameState.board} revealedRows={revealedRows} />
         </div>
-
-        <Keyboard
+      </main>
+      <Keyboard
           onKeyPress={handleKeyPress}
           onEnter={handleEnter}
           onBackspace={handleBackspace}
           keyStates={getKeyboardState(gameState.board)}
           disabled={gameState.gameOver}
-        />
-      </main>
+      />
     </div>
   );
 }
