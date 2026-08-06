@@ -55,7 +55,7 @@ export default function Confetti({ active }: { active: boolean }) {
       {pieces.map((piece) => (
         <div
           key={piece.id}
-          className="confetti-piece absolute"
+          className="confetti-piece animate-confetti absolute"
           style={{
             left: `${piece.x}%`,
             top: "-10px",
