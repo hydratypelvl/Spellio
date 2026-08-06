@@ -116,16 +116,14 @@ export default function GameOverModal({
           <div className="space-y-1.5">
             {distribution.map((count, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-sm font-medium text-black dark:text-white w-3 text-center">{i + 1}</span>
+                <span className="text-sm font-medium text-black dark:text-white w-3">{i + 1}</span>
                 <div className="flex-1">
                   <div
-                    className="h-6 rounded flex items-center text-xs font-bold text-white"
+                    className="h-6 rounded flex items-center justify-end px-2 text-xs font-bold text-white"
                     style={{
                       width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`,
                       minWidth: count > 0 ? "24px" : "0px",
                       backgroundColor: won && attempts - 1 === i ? "#6aaa64" : "#787c7e",
-                      justifyContent: count > 0 ? "flex-end" : "center",
-                      padding: count > 0 ? "0 6px" : "0",
                     }}
                   >
                     {count}
