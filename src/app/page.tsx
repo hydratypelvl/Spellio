@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Board from "@/components/Board";
 import Keyboard from "@/components/Keyboard";
 import Confetti from "@/components/Confetti";
 import TutorialModal, { useTutorial } from "@/components/TutorialModal";
 import GameOverModal from "@/components/GameOverModal";
+import StatsModal from "@/components/StatsModal";
 import {
   createGameState,
   addLetter,
@@ -111,14 +113,18 @@ function getRandomWord(): string {
 }
 
 export default function Home() {
+  const { data: session, status } = useSession();
   const { showTutorial, closeTutorial } = useTutorial();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [showManualTutorial, setShowManualTutorial] = useState(false);
   const [revealedRows, setRevealedRows] = useState<Set<number>>(new Set());
   const [showGameOver, setShowGameOver] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState<number>(0);
 
   useEffect(() => {
     setGameState(createGameState(getRandomWord()));
+    setGameStartTime(Date.now());
   }, []);
 
   const handleKeyPress = useCallback(
@@ -145,7 +151,29 @@ export default function Home() {
     setGameState(createGameState(getRandomWord()));
     setRevealedRows(new Set());
     setShowGameOver(false);
+    setGameStartTime(Date.now());
   }, []);
+
+  useEffect(() => {
+    if (gameState?.gameOver && session?.user) {
+      const time = Math.floor((Date.now() - gameStartTime) / 1000);
+      const lastRow = gameState.currentRow > 0 ? gameState.currentRow - 1 : 0;
+      const word = gameState.board[lastRow]
+        ? gameState.board[lastRow].map((t) => t.letter).join("")
+        : "";
+
+      fetch("/api/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          word,
+          attempts: gameState.currentRow,
+          won: gameState.won,
+          time,
+        }),
+      });
+    }
+  }, [gameState?.gameOver, session?.user, gameStartTime, gameState]);
 
   useEffect(() => {
     if (gameState?.gameOver) {
@@ -158,7 +186,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState?.gameOver || showTutorial || showManualTutorial) return;
+      if (gameState?.gameOver || showTutorial || showManualTutorial || showGameOver) return;
 
       if (e.key === "Enter") {
         handleEnter();
@@ -171,9 +199,9 @@ export default function Home() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [gameState, handleEnter, handleBackspace, handleKeyPress, showTutorial, showManualTutorial]);
+  }, [gameState, handleEnter, handleBackspace, handleKeyPress, showTutorial, showManualTutorial, showGameOver]);
 
-  if (!gameState) return null;
+  if (status === "loading" || !gameState) return null;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white dark:bg-zinc-900 p-4">
@@ -184,8 +212,6 @@ export default function Home() {
         }} />
       )}
 
-      <Confetti active={gameState.won} />
-
       {showGameOver && gameState.gameOver && (
         <GameOverModal
           won={gameState.won}
@@ -195,20 +221,64 @@ export default function Home() {
         />
       )}
 
+      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+
+      <Confetti active={gameState.won} />
+
       <header className="w-full max-w-[500px] border-b border-zinc-300 dark:border-zinc-700 pb-4 mb-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-widest uppercase text-black dark:text-white">
             Wordle
           </h1>
-          <button
-            onClick={() => setShowManualTutorial(true)}
-            className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
-            aria-label="How to play"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowManualTutorial(true)}
+              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              aria-label="How to play"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+            {session?.user && (
+              <button
+                onClick={() => setShowStats(true)}
+                className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+                aria-label="Statistics"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </button>
+            )}
+            {session?.user ? (
+              <div className="flex items-center gap-3">
+                {session.user.image && (
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+                <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 hidden sm:inline">
+                  {session.user.name || session.user.email}
+                </span>
+                <button
+                  onClick={() => signOut()}
+                  className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <a
+                href="/api/auth/signin"
+                className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              >
+                Sign In
+              </a>
+            )}
+          </div>
         </div>
       </header>
 
