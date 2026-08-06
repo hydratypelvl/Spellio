@@ -24,9 +24,6 @@ export const {
   session: {
     strategy: "jwt",
   },
-  pages: {
-    signIn: "/",
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
