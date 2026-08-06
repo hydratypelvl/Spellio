@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wordle",
+  title: "Spellio",
   description: "A Wordle-inspired word guessing game",
 };
 

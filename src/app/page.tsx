@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Board from "@/components/Board";
 import Keyboard from "@/components/Keyboard";
@@ -10,6 +10,7 @@ import TutorialModal, { useTutorial } from "@/components/TutorialModal";
 import GameOverModal from "@/components/GameOverModal";
 import StatsModal from "@/components/StatsModal";
 import UsernameModal from "@/components/UsernameModal";
+import ProfileDropdown from "@/components/ProfileDropdown";
 import {
   createGameState,
   addLetter,
@@ -288,25 +289,11 @@ export default function Home() {
               </button>
             )}
             {session?.user ? (
-              <div className="flex items-center gap-3">
-                {session.user.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
-                    className="w-8 h-8 rounded-full"
-                  />
-                )}
-                <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 hidden sm:inline">
-                  {(session.user as { username?: string }).username || session.user.name || session.user.email}
-                </span>
-                <button
-                  onClick={() => signOut()}
-                  className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-                >
-                  Sign Out
-                </button>
-              </div>
+              <ProfileDropdown
+                username={(session.user as { username?: string }).username || session.user.name || session.user.email || ""}
+                image={session.user.image}
+                name={session.user.name}
+              />
             ) : (
               <Link
                 href="/signin"

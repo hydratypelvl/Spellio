@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     select: { id: true },
   });
 
-  if (existing) {
+  if (existing && existing.id !== session.user.id) {
     return NextResponse.json({ error: "Username already taken" }, { status: 409 });
   }
 
