@@ -1,15 +1,14 @@
 "use client";
 
 import Tile from "./Tile";
-import { type Tile as TileType, type TileState } from "@/lib/wordle";
+import { type Tile as TileType } from "@/lib/wordle";
 
 interface BoardProps {
   board: TileType[][];
-  currentRow: number;
   revealedRows: Set<number>;
 }
 
-export default function Board({ board, currentRow, revealedRows }: BoardProps) {
+export default function Board({ board, revealedRows }: BoardProps) {
   return (
     <div className="flex flex-col gap-1.5" role="grid" aria-label="Wordle board">
       {board.map((row, rowIndex) => (
