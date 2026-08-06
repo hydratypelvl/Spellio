@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Tile from "./Tile";
 
 export function useTutorial() {
@@ -73,6 +74,10 @@ export default function TutorialModal({ onClose }: { onClose: () => void }) {
         >
           Got It!
         </button>
+
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center mt-4">
+          <Link href="/signin" className="font-semibold text-green-600 dark:text-green-400 hover:underline">Sign in</Link> to track stats
+        </p>
       </div>
     </div>
   );

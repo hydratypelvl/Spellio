@@ -85,7 +85,7 @@ export default function GameOverModal({
           )}
         </div>
 
-        {session?.user ? (
+        {session?.user && (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">Your Stats</h3>
             <div className="grid grid-cols-4 gap-3 text-center">
@@ -109,15 +109,6 @@ export default function GameOverModal({
               </div>
             </div>
           </div>
-        ) : (
-          <div className="mb-6 text-center">
-            <Link
-              href="/signin"
-              className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
-            >
-              Sign in to track stats
-            </Link>
-          </div>
         )}
 
         <div className="mb-6">
@@ -125,14 +116,16 @@ export default function GameOverModal({
           <div className="space-y-1.5">
             {distribution.map((count, i) => (
               <div key={i} className="flex items-center gap-2">
-                <span className="text-sm font-medium text-black dark:text-white w-3">{i + 1}</span>
+                <span className="text-sm font-medium text-black dark:text-white w-3 text-center">{i + 1}</span>
                 <div className="flex-1">
                   <div
-                    className="h-6 rounded flex items-center justify-end px-2 text-xs font-bold text-white"
+                    className="h-6 rounded flex items-center text-xs font-bold text-white"
                     style={{
                       width: `${maxCount > 0 ? (count / maxCount) * 100 : 0}%`,
                       minWidth: count > 0 ? "24px" : "0px",
                       backgroundColor: won && attempts - 1 === i ? "#6aaa64" : "#787c7e",
+                      justifyContent: count > 0 ? "flex-end" : "center",
+                      padding: count > 0 ? "0 6px" : "0",
                     }}
                   >
                     {count}
@@ -149,6 +142,12 @@ export default function GameOverModal({
         >
           Play Again
         </button>
+
+        {!session?.user && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center mt-4">
+            <Link href="/signin" className="font-semibold text-green-600 dark:text-green-400 hover:underline">Sign in</Link> to track stats
+          </p>
+        )}
       </div>
     </div>
   );

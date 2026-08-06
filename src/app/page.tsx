@@ -329,15 +329,6 @@ export default function Home() {
           keyStates={getKeyboardState(gameState.board)}
           disabled={gameState.gameOver}
         />
-
-        {!session?.user && (
-          <Link
-            href="/signin"
-            className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-green-600 dark:hover:text-green-400 transition-colors mt-2"
-          >
-            Sign in to track stats
-          </Link>
-        )}
       </main>
     </div>
   );
