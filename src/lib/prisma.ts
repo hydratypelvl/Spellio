@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+// @ts-expect-error Prisma 7 re-export resolution under Turbopack
+import { PrismaClient } from "@prisma/client/default";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = globalThis as unknown as {
