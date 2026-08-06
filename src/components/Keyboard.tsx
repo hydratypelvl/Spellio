@@ -17,11 +17,11 @@ const ROWS = [
 ];
 
 const stateStyles: Record<TileState, string> = {
-  correct: "bg-green-500 hover:bg-green-600 border-green-500 text-white",
-  present: "bg-yellow-500 hover:bg-yellow-600 border-yellow-500 text-white",
-  absent: "bg-zinc-500 hover:bg-zinc-600 border-zinc-500 text-white",
+  correct: "bg-green-500 hover:bg-green-600 text-white",
+  present: "bg-yellow-500 hover:bg-yellow-600 text-white",
+  absent: "bg-zinc-500 hover:bg-zinc-600 text-white",
   empty:
-    "bg-zinc-200 hover:bg-zinc-300 border-zinc-300 text-black dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:border-zinc-600 dark:text-white",
+    "bg-zinc-200 hover:bg-zinc-300 text-black dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:text-white",
 };
 
 export default function Keyboard({
@@ -44,23 +44,34 @@ export default function Keyboard({
   };
 
   return (
-    <div className="flex flex-col gap-[3px] sm:gap-1 w-full" role="group" aria-label="Keyboard">
+    <div className="flex flex-col gap-[5px] w-full" role="group" aria-label="Keyboard">
       {ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center gap-[3px] sm:gap-1">
+        <div key={rowIndex} className="flex justify-center gap-[5px]">
           {row.map((key) => {
-            const isSpecial = key === "ENTER" || key === "BACKSPACE";
+            const isEnter = key === "ENTER";
+            const isBackspace = key === "BACKSPACE";
             return (
               <button
                 key={key}
                 onClick={() => handleClick(key)}
                 onMouseDown={(e) => e.preventDefault()}
                 disabled={disabled}
-                className={`h-[46px] sm:h-14 rounded-[4px] flex items-center justify-center border transition-colors duration-200 text-[13px] sm:text-base font-semibold select-none ${
-                  isSpecial ? "flex-[1.3] min-w-0" : "flex-1 min-w-0"
+                className={`h-[50px] sm:h-[58px] rounded-md flex items-center justify-center transition-colors duration-200 text-[13px] sm:text-sm font-bold select-none tracking-wide ${
+                  isEnter
+                    ? "flex-[1.5] min-w-0 text-[11px] sm:text-xs uppercase"
+                    : isBackspace
+                      ? "flex-[1.5] min-w-0"
+                      : "flex-1 min-w-0"
                 } ${stateStyles[keyStates[key] || "empty"]}`}
-                aria-label={key === "BACKSPACE" ? "Backspace" : key === "ENTER" ? "Enter" : key}
+                aria-label={isBackspace ? "Backspace" : isEnter ? "Enter" : key}
               >
-                {key === "BACKSPACE" ? "←" : key}
+                {isBackspace ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l-4-4m0 0l4-4m-4 4h11a4 4 0 010 8h-1" />
+                  </svg>
+                ) : (
+                  key
+                )}
               </button>
             );
           })}
