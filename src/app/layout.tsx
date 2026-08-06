@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   title: "Spellio",
   description: "A Wordle-inspired word guessing game",
   openGraph: {
-    title: "Spellio",
-    description: "Guess the word in 6 tries",
+    title: "Spellio – Daily Word Puzzle Game Inspired by Wordle",
+    description: "Play Spellio, Guess the word in 6 tries and challenge your vocabulary.",
     url: "https://spellio-omega.vercel.app",
     siteName: "Spellio",
     images: [
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Spellio",
-    description: "Guess the word in 6 tries",
+    title: "Spellio – Word Puzzle Game Inspired by Wordle",
+    description: "Play Spellio, Guess the word in 6 tries and challenge your vocabulary.",
     images: ["https://spellio-omega.vercel.app/og-image.png"],
   },
 };
