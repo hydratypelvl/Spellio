@@ -13,7 +13,7 @@ interface KeyboardProps {
 const ROWS = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"],
+  ["BACKSPACE", "Z", "X", "C", "V", "B", "N", "M", "ENTER"],
 ];
 
 const stateStyles: Record<TileState, string> = {
@@ -75,7 +75,13 @@ export default function Keyboard({
                                 ? "w-14 sm:w-16 text-[11px]"
                                 : "flex-1 text-sm"
                         }
-                  ${stateStyles[keyStates[key] ?? "empty"]}
+                  ${
+                            isEnter && !keyStates[key]
+                              ? "bg-green-600 hover:bg-green-700 text-white"
+                              : isBackspace && !keyStates[key]
+                                ? "bg-red-500 hover:bg-red-600 text-white"
+                                : stateStyles[keyStates[key] ?? "empty"]
+                        }
                 `}
                     >
                       {isBackspace ? (
