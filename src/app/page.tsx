@@ -144,6 +144,13 @@ export default function Home() {
 
   const handleEnter = useCallback(() => {
     if (gameState.gameOver) return;
+    const currentGuess = gameState.board[gameState.currentRow]
+      .map((tile) => tile.letter)
+      .join("");
+    if (!WORDS.includes(currentGuess.toLowerCase())) {
+      setGameState((prev) => ({ ...prev, message: "Not in word list" }));
+      return;
+    }
     const rowToReveal = gameState.currentRow;
     setRevealedRows(new Set([...revealedRows, rowToReveal]));
     setGameState(submitGuess(gameState));
