@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Spellio
+
+A modern Wordle-inspired word guessing game built with Next.js. Guess the 5-letter word in 6 tries. Features authentication, persistent stats, and a global leaderboard.
+
+**Play now:** [spellio-omega.vercel.app](https://spellio-omega.vercel.app)
+
+## Features
+
+- **Word Guessing** — Classic Wordle gameplay with color-coded feedback (green, yellow, gray)
+- **Authentication** — Sign in with Google or GitHub
+- **Username System** — Set a custom display name for the leaderboard
+- **Personal Stats** — Track your games, win rate, streaks, and guess distribution
+- **Global Leaderboard** — Compete with other players, sortable by wins, win rate, or streak
+- **Responsive Design** — Works on desktop, tablet, and mobile
+- **Dark Mode** — Automatic dark/light theme based on system preference
+- **Keyboard Support** — Play with physical keyboard or on-screen keys
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS 4
+- **Database:** Prisma Postgres
+- **ORM:** Prisma
+- **Auth:** Auth.js v5 (NextAuth)
+- **Deployment:** Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- A Prisma Postgres database (or any PostgreSQL database)
+- Google/GitHub OAuth credentials (optional, for sign-in)
+
+### Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/hydratypelvl/Spellio.git
+cd Spellio
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables by creating `.env.local`:
+
+```bash
+DATABASE_URL="your-database-url"
+AUTH_SECRET="your-auth-secret"
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_ID="your-github-client-id"
+GITHUB_SECRET="your-github-client-secret"
+AUTH_URL="http://localhost:3000"
+```
+
+4. Run database migrations:
+
+```bash
+npx prisma migrate dev
+```
+
+5. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `node scripts/generate-og.js` | Regenerate OpenGraph image from SVG |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── auth/        # Auth.js route handler
+│   │   ├── leaderboard/ # Global leaderboard endpoint
+│   │   ├── stats/       # Personal stats endpoint
+│   │   └── username/    # Username check & set endpoint
+│   ├── signin/          # Custom sign-in page
+│   ├── layout.tsx       # Root layout with metadata
+│   ├── page.tsx         # Main game page
+│   └── globals.css      # Tailwind + animations
+├── components/
+│   ├── Board.tsx        # Game board grid
+│   ├── Confetti.tsx     # Win confetti animation
+│   ├── GameOverModal.tsx    # Game over overlay with stats
+│   ├── Keyboard.tsx     # On-screen keyboard
+│   ├── LeaderboardModal.tsx # Global leaderboard
+│   ├── ProfileDropdown.tsx  # User menu with username edit
+│   ├── StatsModal.tsx   # Personal statistics
+│   ├── Tile.tsx         # Individual letter tile
+│   ├── TutorialModal.tsx    # How to play guide
+│   └── UsernameModal.tsx    # Username picker
+├── lib/
+│   ├── auth.ts          # Auth.js configuration
+│   ├── prisma.ts        # Prisma client
+│   └── wordle.ts        # Game logic engine
+prisma/
+├── schema.prisma        # Database schema
+└── migrations/          # Database migrations
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How to Play
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Guess any 5-letter word
+2. Tiles will change color after each guess:
+   - **Green** — Correct letter in the correct position
+   - **Yellow** — Correct letter in the wrong position
+   - **Gray** — Letter is not in the word
+3. You have 6 attempts to find the word
+4. Sign in to track your stats and appear on the leaderboard
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
