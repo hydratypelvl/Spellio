@@ -11,6 +11,7 @@ import GameOverModal from "@/components/GameOverModal";
 import StatsModal from "@/components/StatsModal";
 import UsernameModal from "@/components/UsernameModal";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import LeaderboardModal from "@/components/LeaderboardModal";
 import {
   createGameState,
   addLetter,
@@ -127,6 +128,7 @@ export default function Home() {
   const [revealedRows, setRevealedRows] = useState<Set<number>>(new Set());
   const [showGameOver, setShowGameOver] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [usernameDismissed, setUsernameDismissed] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number>(() => Date.now());
 
@@ -253,6 +255,8 @@ export default function Home() {
 
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
 
+      {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
+
       {needsUsername && (
         <UsernameModal onComplete={() => {
           setUsernameDismissed(true);
@@ -288,6 +292,15 @@ export default function Home() {
                 </svg>
               </button>
             )}
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              aria-label="Leaderboard"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </button>
             {session?.user ? (
               <ProfileDropdown
                 username={(session.user as { username?: string }).username || session.user.name || session.user.email || ""}
